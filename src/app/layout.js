@@ -26,19 +26,12 @@ export default function RootLayout({ children }) {
       data-theme="light" 
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
-      <body className="flex flex-col min-h-screen">
-        
-        <Toaster position="top-center" reverseOrder={false} />
-
-        
-        <Navbar />
-
-        
+      <body className="flex flex-col min-h-screen">        
+        <Toaster position="top-center" reverseOrder={false} />        
+        <Navbar />        
         <main className="flex-grow">
           {children}
-        </main>
-
-        
+        </main>        
         <Footer />
       </body>
     </html>

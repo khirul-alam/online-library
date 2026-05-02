@@ -1,105 +1,68 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import booksData from "../../../public/books.json";
-import { CiSearch } from "react-icons/ci";
+import SearchBar from "@/components/allbooks/SearchBar";
+import Sidebar from "@/components/allbooks/Sidebar";
+import BookCard from "@/components/allbooks/BookCard";
 
 const AllBooksPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [filteredBooks, setFilteredBooks] = useState(booksData);
+
+  const categories = ["All", ...new Set(booksData.map((book) => book.category))];
+
   useEffect(() => {
     const filtered = booksData.filter((book) => {
-      const matchesSearch = book.title
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const matchesSearch = 
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        book.author.toLowerCase().includes(searchTerm.toLowerCase());
+      
       const matchesCategory =
         selectedCategory === "All" || book.category === selectedCategory;
+      
       return matchesSearch && matchesCategory;
     });
     setFilteredBooks(filtered);
   }, [searchTerm, selectedCategory]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-center mb-10">
-        <div className="form-control w-full max-w-2xl">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search books by title..."
-              className="input input-bordered w-full pl-12 h-14 shadow-lg focus:border-primary"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-              <CiSearch className="text-2xl text-gray-400" />
-            </div>
-          </div>
-        </div>
+    <div className="container mx-auto px-4 py-10 bg-base-50 min-h-screen">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-extrabold text-primary mb-2 text-blue-900">Explore Our Library</h1>
+        <p className="text-gray-500 italic">Find your next favorite book from our collection</p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">        
-        <aside className="w-full lg:w-1/4">
-          <div className="bg-base-100 p-6 rounded-xl shadow-md border border-base-200 sticky top-24">
-            <h2 className="text-xl font-bold mb-4 border-b pb-2">Categories</h2>
-            <ul className="menu bg-base-100 w-full p-0 gap-2">
-              {["All", "Story", "Tech", "Science"].map((cat) => (
-                <li key={cat}>
-                  <button
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`hover:bg-primary hover:text-white transition-all ${
-                      selectedCategory === cat ? "bg-primary text-white" : ""
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </aside>        
+      <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
+      <div className="flex flex-col lg:flex-row gap-10">        
+        <Sidebar 
+          categories={categories} 
+          selectedCategory={selectedCategory} 
+          setSelectedCategory={setSelectedCategory} 
+        />
+
         <main className="w-full lg:w-3/4">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="flex justify-between items-center mb-6">
+            <p className="text-gray-600 font-medium">
+              Showing <span className="text-primary font-bold">{filteredBooks.length}</span> books
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {filteredBooks.length > 0 ? (
               filteredBooks.map((book) => (
-                <div
-                  key={book.id}
-                  className="card bg-base-100 shadow-xl border border-base-200 hover:shadow-2xl transition-shadow"
-                >
-                  <figure className="px-4 pt-4 h-64">
-                    <img
-                      src={book.image_url}
-                      alt={book.title}
-                      className="rounded-xl h-full w-full object-cover"
-                    />
-                  </figure>
-                  <div className="card-body">
-                    <div className="badge badge-secondary badge-outline">
-                      {book.category}
-                    </div>
-                    <h2 className="card-title text-lg h-14 overflow-hidden">
-                      {book.title}
-                    </h2>
-                    <p className="text-gray-500 text-sm italic">
-                      by {book.author}
-                    </p>
-                    <div className="card-actions justify-end mt-4">
-                      <Link
-                        href={`/book/${book.id}`}
-                        className="btn btn-primary btn-sm w-full"
-                      >
-                        View Details
-                      </Link>
-                    </div>
-                  </div>
-                </div>
+                <BookCard key={book.id} book={book} />
               ))
             ) : (
-              <div className="col-span-full text-center py-20">
-                <h3 className="text-2xl font-semibold text-gray-400">
-                  No books found!
-                </h3>
+              <div className="col-span-full flex flex-col items-center justify-center py-20 bg-white rounded-3xl shadow-inner border-2 border-dashed border-gray-200">
+                <h3 className="text-2xl font-bold text-gray-400">No books match your search!</h3>
+                <button 
+                  onClick={() => {setSearchTerm(""); setSelectedCategory("All")}}
+                  className="btn btn-link text-primary mt-2"
+                >
+                  Clear all filters
+                </button>
               </div>
             )}
           </div>
