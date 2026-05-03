@@ -1,12 +1,13 @@
 import Banner from "@/components/home/Banner";
-import Marquee from "@/components/home/Marquee";
+import NewsMarquee from "@/components/Home/Marquee";
 
 export default function Home() {
   return (
     <>
       <main>
+        <NewsMarquee />
         <Banner />
-        <Marquee />
+        
       </main>
     </>
   );
