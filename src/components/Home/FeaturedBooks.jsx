@@ -1,9 +1,22 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react'; 
 import Link from 'next/link';
 import booksData from "../../../public/books.json"; 
+import LoadingSpinner from '../UI/LoadingSpinner'; 
 
 const FeaturedBooks = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {    
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
+    return () => clearTimeout(timer);
+  }, []);
+  
+  if (loading) {
+    return <LoadingSpinner />;
+  }
   
   const featuredBooks = booksData.slice(0, 4);
 
@@ -20,7 +33,6 @@ const FeaturedBooks = () => {
               key={book.id} 
               className="bg-white rounded-xl shadow-md hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col"
             >
-              
               <div className="h-64 overflow-hidden bg-gray-200">
                 <img 
                   src={book.image_url || "https://via.placeholder.com/300x400?text=No+Image"} 
@@ -29,7 +41,6 @@ const FeaturedBooks = () => {
                 />
               </div>
 
-              
               <div className="p-5 flex-grow flex flex-col">
                 <h3 className="text-xl font-bold text-gray-800 line-clamp-1">
                   {book.title}
@@ -41,7 +52,6 @@ const FeaturedBooks = () => {
                   {book.description || "Explore the fascinating world of this book and enhance your knowledge."}
                 </p>
 
-               
                 <Link href={`/book/${book.id}`}>
                   <button className="w-full bg-blue-900 text-white py-2.5 rounded-lg font-semibold hover:bg-yellow-500 hover:text-blue-900 transition-colors duration-300">
                     View Details
